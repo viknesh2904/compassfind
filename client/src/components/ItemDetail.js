@@ -9,7 +9,6 @@ const ItemDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [imageModalOpen, setImageModalOpen] = useState(false);
-  const [showContact, setShowContact] = useState(false);
   const [statusLoading, setStatusLoading] = useState(false);
 
   const isReporter = item && userInfo && item.reportedBy.toLowerCase() === userInfo.rollNumber.toLowerCase();
@@ -218,66 +217,83 @@ const ItemDetail = () => {
               </div>
             </div>
 
-            {/* Contact & Claim Box */}
+            {/* User Entered Phone Number & Email Details */}
             <div className="pt-2">
-              {item.category === 'found' && item.status === 'open' && !isReporter && item.contactPreference ? (
-                <div className="bg-sky-50/70 p-5 rounded-2xl border border-sky-200 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="text-sm font-bold text-slate-900">Claim This Found Item</h4>
-                      <p className="text-xs text-slate-600">The finder agreed to share contact info directly with student claimants.</p>
-                    </div>
-                    {!showContact && (
-                      <button
-                        onClick={() => setShowContact(true)}
-                        className="px-4 py-2 text-xs font-bold text-white bg-[#008ECC] hover:bg-[#0074A6] rounded-full shadow transition-all"
+              <div className="bg-sky-50/70 p-5 rounded-2xl border border-sky-200 space-y-4">
+                <div className="flex items-center justify-between pb-3 border-b border-sky-200/60">
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                      <svg className="w-4 h-4 text-[#008ECC]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                      </svg>
+                      <span>Reporter Contact Information</span>
+                    </h3>
+                    <p className="text-[11px] text-slate-600 mt-0.5">
+                      {item.category === 'lost' 
+                        ? 'Details entered by the owner. Reach out if you found this item or have information.' 
+                        : 'Details entered by the finder. Contact them to arrange return or verification.'}
+                    </p>
+                  </div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 bg-white rounded-full text-[#008ECC] border border-sky-200 shadow-sm">
+                    {item.reportedBy}
+                  </span>
+                </div>
+
+                {/* Contact Cards: Phone & Email */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  
+                  {/* Phone Number Box */}
+                  <div className="bg-white p-3.5 rounded-xl border border-sky-200/80 shadow-sm space-y-1">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                      Phone Number
+                    </span>
+                    {item.contactInfo?.phone ? (
+                      <a
+                        href={`tel:${item.contactInfo.phone}`}
+                        className="text-sm font-bold text-slate-900 hover:text-[#008ECC] flex items-center gap-2 transition-colors"
                       >
-                        Reveal Contact Info
-                      </button>
+                        <svg className="w-4 h-4 text-[#008ECC] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                        </svg>
+                        <span>{item.contactInfo.phone}</span>
+                      </a>
+                    ) : (
+                      <p className="text-xs text-slate-400 italic">No phone number provided</p>
                     )}
                   </div>
 
-                  {showContact && (
-                    <div className="pt-3 border-t border-sky-200/60 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {item.contactInfo?.email && (
-                        <div className="bg-white p-3 rounded-xl border border-sky-200 text-xs">
-                          <span className="text-slate-400 font-bold block text-[10px] uppercase">Email Address</span>
-                          <a href={`mailto:${item.contactInfo.email}`} className="font-semibold text-[#008ECC] hover:underline">
-                            {item.contactInfo.email}
-                          </a>
-                        </div>
-                      )}
-                      {item.contactInfo?.phone && (
-                        <div className="bg-white p-3 rounded-xl border border-sky-200 text-xs">
-                          <span className="text-slate-400 font-bold block text-[10px] uppercase">Phone Number</span>
-                          <a href={`tel:${item.contactInfo.phone}`} className="font-semibold text-slate-800">
-                            {item.contactInfo.phone}
-                          </a>
-                        </div>
-                      )}
-                    </div>
-                  )}
+                  {/* Email Address Box */}
+                  <div className="bg-white p-3.5 rounded-xl border border-sky-200/80 shadow-sm space-y-1">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                      Email Address
+                    </span>
+                    {item.contactInfo?.email ? (
+                      <a
+                        href={`mailto:${item.contactInfo.email}`}
+                        className="text-sm font-bold text-[#008ECC] hover:underline flex items-center gap-2 transition-colors truncate"
+                        title={item.contactInfo.email}
+                      >
+                        <svg className="w-4 h-4 text-[#008ECC] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                        <span className="truncate">{item.contactInfo.email}</span>
+                      </a>
+                    ) : (
+                      <p className="text-xs text-slate-400 italic">No email provided</p>
+                    )}
+                  </div>
                 </div>
-              ) : item.status === 'returned' ? (
-                <div className="bg-emerald-50 p-4 rounded-2xl border border-emerald-200 flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center flex-shrink-0">
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+
+                {/* Status Notice */}
+                {item.status === 'returned' && (
+                  <div className="bg-emerald-50 p-3 rounded-xl border border-emerald-200 flex items-center gap-2 text-xs text-emerald-800">
+                    <svg className="w-4 h-4 text-emerald-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
+                    <span><strong>Item Resolved:</strong> This item has been returned to its rightful owner.</span>
                   </div>
-                  <div className="text-xs text-emerald-800">
-                    <p className="font-bold">Item Successfully Returned</p>
-                    <p className="text-[11px] text-emerald-700">This report has been resolved and verified by the campus community.</p>
-                  </div>
-                </div>
-              ) : (
-                <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs text-slate-600 space-y-1">
-                  <p className="font-bold text-slate-800">Standard Campus Desk Verification</p>
-                  <p className="text-[11px]">
-                    To claim this belonging, visit the <strong>Campus Security Desk (Admin Block Room 102)</strong> with your physical Student ID card.
-                  </p>
-                </div>
-              )}
+                )}
+              </div>
             </div>
 
           </div>
