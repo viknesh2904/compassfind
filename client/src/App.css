@@ -1,0 +1,325 @@
+/* Formal White & Blue Theme - Inspired by MegaMart & Clean Corporate Portals */
+
+:root {
+  --brand-background: #F8FAFC;
+  --brand-surface: #FFFFFF;
+  --brand-primary: #008ECC;
+  --brand-primary-hover: #0074A6;
+  --brand-primary-light: #E0F2FE;
+  --brand-primary-rgb: 0, 142, 204;
+  --brand-secondary: #2563EB;
+  --brand-text-primary: #0F172A;
+  --brand-text-secondary: #475569;
+  --brand-text-muted: #94A3B8;
+  --brand-border: #E2E8F0;
+  --brand-error: #EF4444;
+  --brand-error-hover: #DC2626;
+  --brand-error-rgb: 239, 68, 68;
+  --brand-success: #10B981;
+  --brand-input-bg: #FFFFFF;
+  --brand-button-text: #FFFFFF;
+  --brand-button-text-light: #FFFFFF;
+}
+
+/* Page App Shell */
+.app-container {
+  background-color: var(--brand-background);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Formal White Card */
+.surface-card {
+  background-color: var(--brand-surface);
+  border-radius: 1rem;
+  border: 1px solid var(--brand-border);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+  color: var(--brand-text-primary);
+  transition: all 0.25s ease-in-out;
+}
+
+.surface-card:hover {
+  border-color: #CBD5E1;
+}
+
+/* Section Header with Blue Underline Indicator (Template Signature) */
+.section-heading-highlight {
+  position: relative;
+  font-weight: 700;
+  color: #0F172A;
+  padding-bottom: 0.25rem;
+}
+
+.section-heading-highlight .highlight-word {
+  color: #008ECC;
+  position: relative;
+  display: inline-block;
+}
+
+.section-heading-highlight .highlight-word::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: #008ECC;
+  border-radius: 2px;
+}
+
+/* Form inputs */
+.form-input,
+.surface-card input[type="text"],
+.surface-card input[type="password"],
+.surface-card input[type="email"],
+.surface-card input[type="tel"],
+.surface-card input[type="file"],
+.surface-card select,
+.surface-card textarea {
+  color: #0F172A !important;
+  background-color: #FFFFFF !important;
+  border: 1px solid #CBD5E1 !important;
+  border-radius: 0.5rem;
+  padding: 0.65rem 1rem;
+  width: 100%;
+  font-size: 0.95rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.form-input::placeholder,
+.surface-card input::placeholder,
+.surface-card textarea::placeholder {
+  color: #94A3B8 !important;
+}
+
+.form-input:focus,
+.surface-card input:focus,
+.surface-card select:focus,
+.surface-card textarea:focus {
+  outline: none;
+  border-color: #008ECC !important;
+  box-shadow: 0 0 0 3px rgba(0, 142, 204, 0.15) !important;
+}
+
+/* Button styles */
+.btn {
+  padding: 0.65rem 1.4rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.925rem;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.btn-primary {
+  background-color: #008ECC;
+  color: #FFFFFF;
+  border-color: #008ECC;
+}
+
+.btn-primary:hover {
+  background-color: #0074A6;
+  border-color: #0074A6;
+  box-shadow: 0 4px 12px rgba(0, 142, 204, 0.25);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background-color: #F1F5F9;
+  color: #0F172A;
+  border-color: #E2E8F0;
+}
+
+.btn-secondary:hover {
+  background-color: #E2E8F0;
+  color: #008ECC;
+}
+
+.btn-outline-primary {
+  background-color: transparent;
+  color: #008ECC;
+  border-color: #008ECC;
+}
+
+.btn-outline-primary:hover {
+  background-color: #E0F2FE;
+  color: #0074A6;
+}
+
+.btn-danger {
+  background-color: #EF4444;
+  color: #FFFFFF;
+  border-color: #EF4444;
+}
+
+.btn-danger:hover {
+  background-color: #DC2626;
+  border-color: #DC2626;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+/* Category Pill Styling (Template Header Pills) */
+.category-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  border: 1px solid #E2E8F0;
+  background-color: #FFFFFF;
+  color: #334155;
+}
+
+.category-pill:hover {
+  border-color: #008ECC;
+  color: #008ECC;
+  background-color: #F0F9FF;
+}
+
+.category-pill.active {
+  background-color: #008ECC;
+  color: #FFFFFF;
+  border-color: #008ECC;
+  box-shadow: 0 2px 6px rgba(0, 142, 204, 0.35);
+}
+
+/* Horizontal card carousel item */
+.product-card {
+  min-width: 260px;
+  max-width: 280px;
+  background-color: #FFFFFF;
+  border-radius: 1rem;
+  border: 1px solid #E2E8F0;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.25s ease-in-out;
+  flex-shrink: 0;
+}
+
+.product-card:hover {
+  border-color: #008ECC;
+  box-shadow: 0 10px 25px -5px rgba(0, 142, 204, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  transform: translateY(-3px);
+}
+
+/* Circular Category Bubble (Template "Shop from Top Categories") */
+.category-bubble {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.category-bubble-ring {
+  width: 5rem;
+  height: 5rem;
+  border-radius: 9999px;
+  border: 1.5px solid #E2E8F0;
+  background-color: #F8FAFC;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.85rem;
+  transition: all 0.25s ease;
+}
+
+.category-bubble:hover .category-bubble-ring {
+  border-color: #008ECC;
+  background-color: #F0F9FF;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 142, 204, 0.2);
+}
+
+.category-bubble-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #334155;
+  text-align: center;
+}
+
+.category-bubble:hover .category-bubble-label {
+  color: #008ECC;
+}
+
+/* Labels and Headings */
+.form-label {
+  color: #334155;
+  margin-bottom: 0.4rem;
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.page-title {
+  color: #0F172A;
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.section-title {
+  color: #0F172A;
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+.link-style {
+  color: #008ECC;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.link-style:hover {
+  color: #0074A6;
+  text-decoration: underline;
+}
+
+/* Error and alert message */
+.error-message {
+  background-color: #FEF2F2;
+  border: 1px solid #FCA5A5;
+  color: #B91C1C;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+}
+
+.error-message-box {
+  background-color: #FEF2F2;
+  border: 1px solid #FCA5A5;
+  color: #B91C1C;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+}
+
+.success-message {
+  background-color: #F0FDF4;
+  border: 1px solid #86EFAC;
+  color: #166534;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+}
