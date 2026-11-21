@@ -1,23 +1,34 @@
 const mongoose = require('mongoose');
 
-const getMongoUri = () => {
-  let uri = process.env.MONGO_URI || process.env.MONGODB_URI;
-  if (!uri) return null;
+const safeEncode = (str) => {
+  if (!str) return '';
+  try {
+    return encodeURIComponent(decodeURIComponent(str));
+  } catch (e) {
+    return encodeURIComponent(str);
+  }
+};
 
-  const username = process.env.MONGODB_USERNAME;
-  const password = process.env.MONGODB_PASSWORD;
+const sanitizeMongoUri = (rawUri) => {
+  if (!rawUri) return null;
+  let uri = rawUri.trim();
 
-  if (username && password) {
-    if (uri.includes('<username>') || uri.includes('<password>')) {
-      uri = uri
-        .replace('<username>', encodeURIComponent(username))
-        .replace('<password>', encodeURIComponent(password));
-    } else if (!uri.includes('@')) {
-      // If uri format is mongodb+srv://cluster.mongodb.net/dbname without credentials
-      if (uri.startsWith('mongodb+srv://')) {
-        uri = 'mongodb+srv://' + encodeURIComponent(username) + ':' + encodeURIComponent(password) + '@' + uri.slice('mongodb+srv://'.length);
-      } else if (uri.startsWith('mongodb://')) {
-        uri = 'mongodb://' + encodeURIComponent(username) + ':' + encodeURIComponent(password) + '@' + uri.slice('mongodb://'.length);
+  // Handle case where password inside uri contains unescaped special characters (@, #, etc.)
+  const schemeMatch = uri.match(/^(mongodb(?:\+srv)?:\/\/)(.*)$/);
+  if (schemeMatch) {
+    const scheme = schemeMatch[1];
+    const rest = schemeMatch[2];
+
+    const lastAt = rest.lastIndexOf('@');
+    if (lastAt !== -1) {
+      const userPass = rest.slice(0, lastAt);
+      const hostAndQuery = rest.slice(lastAt + 1);
+
+      const firstColon = userPass.indexOf(':');
+      if (firstColon !== -1) {
+        const user = userPass.slice(0, firstColon);
+        const pass = userPass.slice(firstColon + 1);
+        uri = `${scheme}${safeEncode(user)}:${safeEncode(pass)}@${hostAndQuery}`;
       }
     }
   }
@@ -28,6 +39,34 @@ const getMongoUri = () => {
   }
 
   return uri;
+};
+
+const getMongoUri = () => {
+  let uri = process.env.MONGO_URI || process.env.MONGODB_URI;
+  if (!uri) return null;
+
+  const username = process.env.MONGODB_USERNAME;
+  const password = process.env.MONGODB_PASSWORD;
+
+  if (username && password) {
+    const safeUser = safeEncode(username);
+    const safePass = safeEncode(password);
+
+    if (uri.includes('<username>') || uri.includes('<password>')) {
+      uri = uri
+        .replace('<username>', safeUser)
+        .replace('<password>', safePass);
+    } else if (!uri.includes('@')) {
+      // If uri format is mongodb+srv://cluster.mongodb.net/dbname without credentials
+      if (uri.startsWith('mongodb+srv://')) {
+        uri = 'mongodb+srv://' + safeUser + ':' + safePass + '@' + uri.slice('mongodb+srv://'.length);
+      } else if (uri.startsWith('mongodb://')) {
+        uri = 'mongodb://' + safeUser + ':' + safePass + '@' + uri.slice('mongodb://'.length);
+      }
+    }
+  }
+
+  return sanitizeMongoUri(uri);
 };
 
 const connectDB = async () => {
