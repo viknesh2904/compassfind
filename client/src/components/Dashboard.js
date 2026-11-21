@@ -84,18 +84,27 @@ const Dashboard = () => {
   const openItems = items.filter(i => i.status === 'open');
   const returnedItems = items.filter(i => i.status === 'returned');
 
+  // Hero carousel auto-advance timer
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveSlide(prev => (prev === slides.length - 1 ? 0 : prev + 1));
+    }, 6000);
+    return () => clearInterval(timer);
+  }, [slides.length]);
+
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-10">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-10 animate-fade-in">
 
       {/* Hero Carousel Banner */}
-      <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-slate-950 via-slate-900 to-sky-950 text-white shadow-xl min-h-[340px] flex items-center">
+      <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-slate-950 via-slate-900 to-sky-950 text-white shadow-xl min-h-[340px] flex items-center border border-slate-800">
         {/* Background glow */}
         <div className="absolute -top-24 -right-24 w-96 h-96 bg-sky-500/20 rounded-full blur-3xl pointer-events-none"></div>
         <div className="absolute -bottom-24 -left-24 w-80 h-80 bg-blue-600/20 rounded-full blur-3xl pointer-events-none"></div>
 
         <div className="relative z-10 w-full p-6 sm:p-10 lg:p-14 flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="max-w-xl text-left space-y-3">
-            <span className="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-sky-500/20 text-sky-300 border border-sky-400/30">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-sky-500/20 text-sky-300 border border-sky-400/30">
+              <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse"></span>
               {slides[activeSlide].badge}
             </span>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight">
@@ -107,10 +116,12 @@ const Dashboard = () => {
             <div className="pt-2 flex flex-wrap items-center gap-4">
               <Link
                 to={slides[activeSlide].actionLink}
-                className="px-6 py-2.5 rounded-full text-sm font-bold bg-[#008ECC] hover:bg-[#0074A6] text-white shadow-lg shadow-sky-500/30 transition-all transform hover:-translate-y-0.5 inline-flex items-center gap-2"
+                className="px-6 py-2.5 rounded-full text-sm font-bold bg-[#008ECC] hover:bg-[#0074A6] text-white shadow-lg shadow-sky-500/30 transition-all transform hover:-translate-y-0.5 inline-flex items-center gap-2 active:scale-95"
               >
                 <span>{slides[activeSlide].actionText}</span>
-                <span>&rarr;</span>
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
               </Link>
               <Link
                 to="/items"
@@ -123,7 +134,7 @@ const Dashboard = () => {
 
           {/* Right Hero Visual Card */}
           <div className="flex-shrink-0 relative hidden sm:block">
-            <div className="w-56 h-56 sm:w-64 sm:h-64 rounded-3xl bg-gradient-to-tr from-sky-600/40 to-slate-800/80 p-3 border border-sky-400/30 shadow-2xl backdrop-blur-md flex flex-col items-center justify-center text-center">
+            <div className="w-56 h-56 sm:w-64 sm:h-64 rounded-3xl bg-gradient-to-tr from-sky-600/30 to-slate-800/80 p-3.5 border border-sky-400/30 shadow-2xl backdrop-blur-md flex flex-col items-center justify-center text-center">
               <img
                 src={slides[activeSlide].image}
                 alt="Campus Recovery"
@@ -132,8 +143,8 @@ const Dashboard = () => {
               <span className="text-xs font-bold text-sky-300 tracking-wider uppercase">
                 {slides[activeSlide].highlight}
               </span>
-              <span className="text-[11px] text-slate-300">
-                {stats.helpedUsers} Students Helped | {stats.itemsRecovered} Recovered
+              <span className="text-[11px] text-slate-300 font-medium mt-0.5">
+                {stats.helpedUsers} Students Helped &bull; {stats.itemsRecovered} Recovered
               </span>
             </div>
           </div>
@@ -145,14 +156,18 @@ const Dashboard = () => {
           className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/20 hover:bg-white/40 text-white flex items-center justify-center backdrop-blur-sm transition-all"
           aria-label="Previous slide"
         >
-          &lt;
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
+          </svg>
         </button>
         <button
           onClick={() => setActiveSlide(prev => (prev === slides.length - 1 ? 0 : prev + 1))}
           className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/20 hover:bg-white/40 text-white flex items-center justify-center backdrop-blur-sm transition-all"
           aria-label="Next slide"
         >
-          &gt;
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+          </svg>
         </button>
 
         {/* Carousel Dots */}
@@ -177,22 +192,28 @@ const Dashboard = () => {
           <div className="flex items-center gap-3">
             <Link to="/items" className="text-sm font-bold text-[#008ECC] hover:underline flex items-center gap-1">
               <span>View All</span>
-              <span>&gt;</span>
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+              </svg>
             </Link>
             <div className="hidden sm:flex items-center gap-1.5 pl-2 border-l border-slate-200">
               <button
                 onClick={() => scrollTrack('left')}
-                className="w-8 h-8 rounded-full border border-slate-300 hover:border-[#008ECC] hover:text-[#008ECC] bg-white flex items-center justify-center text-slate-600 transition-colors"
+                className="w-8 h-8 rounded-full border border-slate-300 hover:border-[#008ECC] hover:text-[#008ECC] bg-white flex items-center justify-center text-slate-600 transition-colors shadow-sm"
                 aria-label="Scroll left"
               >
-                &lt;
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
+                </svg>
               </button>
               <button
                 onClick={() => scrollTrack('right')}
-                className="w-8 h-8 rounded-full border border-slate-300 hover:border-[#008ECC] hover:text-[#008ECC] bg-white flex items-center justify-center text-slate-600 transition-colors"
+                className="w-8 h-8 rounded-full border border-slate-300 hover:border-[#008ECC] hover:text-[#008ECC] bg-white flex items-center justify-center text-slate-600 transition-colors shadow-sm"
                 aria-label="Scroll right"
               >
-                &gt;
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+                </svg>
               </button>
             </div>
           </div>
@@ -200,9 +221,12 @@ const Dashboard = () => {
 
         {/* Horizontal Track */}
         {loading ? (
-          <div className="text-center py-12 text-slate-500">Loading campus reports...</div>
+          <div className="text-center py-12 text-slate-500 flex flex-col items-center justify-center gap-2">
+            <div className="w-6 h-6 border-2 border-sky-200 border-t-[#008ECC] rounded-full animate-spin"></div>
+            <span className="text-xs font-semibold">Loading campus reports...</span>
+          </div>
         ) : openItems.length === 0 ? (
-          <div className="text-center py-10 text-slate-500 bg-white rounded-2xl border border-slate-200">
+          <div className="text-center py-10 text-slate-500 bg-white rounded-3xl border border-slate-200">
             No open reports currently. All items have been recovered.
           </div>
         ) : (
@@ -214,30 +238,31 @@ const Dashboard = () => {
               <div
                 key={item._id}
                 onClick={() => navigate(`/items/${item._id}`)}
-                className="product-card group cursor-pointer"
+                className="product-card group cursor-pointer hover:-translate-y-1 transition-all duration-300"
               >
                 {/* Card Badges */}
                 <div className="flex items-center justify-between mb-2">
                   <span
                     className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold tracking-wide uppercase ${
                       item.category === 'found'
-                        ? 'bg-sky-50 text-sky-700 border border-sky-200'
+                        ? 'bg-sky-50 text-[#008ECC] border border-sky-200'
                         : 'bg-rose-50 text-rose-700 border border-rose-200'
                     }`}
                   >
                     {item.category === 'found' ? 'FOUND' : 'LOST'}
                   </span>
-                  <span className="text-[11px] font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+                  <span className="text-[11px] font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200 flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
                     Open
                   </span>
                 </div>
 
                 {/* Centered Image Container */}
-                <div className="w-full h-44 rounded-xl overflow-hidden bg-slate-50 mb-3 flex items-center justify-center">
+                <div className="w-full h-44 rounded-2xl overflow-hidden bg-slate-100 mb-3 flex items-center justify-center">
                   <img
                     src={item.photo.startsWith('http') ? item.photo : `${process.env.REACT_APP_API_URL || ''}${item.photo}`}
                     alt={item.itemName}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>
 
@@ -253,8 +278,8 @@ const Dashboard = () => {
                   <span className="truncate">{item.location}</span>
                 </p>
 
-                <div className="mt-auto pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
-                  <span>By: <strong className="text-slate-600">{item.reportedBy}</strong></span>
+                <div className="mt-auto pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400 font-medium">
+                  <span>By: <strong className="text-slate-700">{item.reportedBy}</strong></span>
                   <span>{new Date(item.createdAt).toLocaleDateString()}</span>
                 </div>
               </div>
