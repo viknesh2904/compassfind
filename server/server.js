@@ -1,21 +1,60 @@
 const express = require('express');
 const path = require('path');
+const os = require('os');
 const cors = require('cors');
 const connectDB = require('./config/db.js');
 require('dotenv').config();
 const userRoutes = require('./routes/userRoutes.js');
 const itemRoutes = require('./routes/itemRoutes.js');
+const seedDatabase = require('./seedHandler.js');
 const fs = require('fs');
 
 const app = express();
-connectDB();
 app.use(cors());
 app.use(express.json());
 
-// Ensure uploads directory exists (for item images)
-const uploadsDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+// Ensure uploads directory exists (use os.tmpdir() in serverless/Vercel to avoid EROFS read-only error)
+const uploadsDir = process.env.VERCEL ? path.join(os.tmpdir(), 'uploads') : path.join(__dirname, 'uploads');
+try {
+  if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+} catch (e) {
+  // Read-only filesystem in serverless, ignore
+}
 app.use('/uploads', express.static(uploadsDir));
+
+// Database connection middleware for all /api requests (ensures DB is connected before query execution in serverless)
+app.use('/api', async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    console.error(`Database connection failed on ${req.method} ${req.originalUrl}:`, err.message);
+    return res.status(503).json({
+      message: 'Database connection failed. Please ensure MONGO_URI is set in Vercel and MongoDB Atlas has Network Access 0.0.0.0/0 enabled.',
+      error: err.message
+    });
+  }
+});
+
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    message: 'Lost and Found API is running and connected to MongoDB',
+    environment: process.env.NODE_ENV || 'development',
+    time: new Date().toISOString()
+  });
+});
+
+// Safe Database Migration/Seeding endpoint for MongoDB Atlas setup
+app.get('/api/seed', async (req, res) => {
+  try {
+    const result = await seedDatabase(req.query.force === 'true');
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 // API routes
 app.use('/api/users', userRoutes);

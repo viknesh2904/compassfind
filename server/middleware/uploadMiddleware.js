@@ -2,6 +2,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
+const os = require('os');
 let storage;
 
 const hasCloudinary = 
@@ -26,10 +27,14 @@ if (hasCloudinary) {
 }
 
 if (!storage) {
-  // Local fallback storage in server/uploads
-  const uploadDir = path.join(__dirname, '../uploads');
-  if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
+  // Local fallback storage (uses os.tmpdir() on Vercel/serverless to avoid EROFS read-only crashes)
+  const uploadDir = process.env.VERCEL ? path.join(os.tmpdir(), 'uploads') : path.join(__dirname, '../uploads');
+  try {
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+  } catch (err) {
+    // Read-only filesystem in serverless, ignore
   }
 
   storage = multer.diskStorage({

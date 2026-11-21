@@ -6,14 +6,16 @@ const connectDB = async () => {
     return mongoose.connection;
   }
 
-  try {
-    const mongoUri = process.env.MONGO_URI;
-    if (!mongoUri) {
-      console.warn('Warning: MONGO_URI is not set in environment variables.');
-      return;
-    }
+  const mongoUri = process.env.MONGO_URI;
+  if (!mongoUri) {
+    throw new Error('MONGO_URI environment variable is missing. Please set MONGO_URI in your Vercel project settings.');
+  }
 
-    const conn = await mongoose.connect(mongoUri);
+  try {
+    const conn = await mongoose.connect(mongoUri, {
+      serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of hanging past Vercel lambda limits
+      connectTimeoutMS: 5000,
+    });
     
     if (process.env.NODE_ENV !== 'production') {
       console.log(`MongoDB Connected: ${conn.connection.host}`);
@@ -21,10 +23,7 @@ const connectDB = async () => {
     return conn;
   } catch (error) {
     console.error(`MongoDB connection error: ${error.message}`);
-    // In serverless environments (Vercel), don't kill the worker process
-    if (!process.env.VERCEL) {
-      process.exit(1);
-    }
+    throw error;
   }
 };
 
