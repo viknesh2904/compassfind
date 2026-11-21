@@ -22,6 +22,11 @@ const getMongoUri = () => {
     }
   }
 
+  // Ensure authSource=admin is specified for Atlas cloud clusters
+  if (uri.includes('mongodb.net') && !uri.includes('authSource=')) {
+    uri += (uri.includes('?') ? '&' : '?') + 'authSource=admin';
+  }
+
   return uri;
 };
 
